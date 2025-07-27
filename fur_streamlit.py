@@ -3,22 +3,21 @@ import json
 import os
 from datetime import datetime
 import streamlit as st
-import streamlit_authenticator as stauth
 
 #Пароль
-names = ["Tobias"]
-usernames = ["admin"]
-passwords = ["mosch"]
-hashed_passwords = stauth.Hasher(passwords).generate()
-authenticator = stauth.Authenticate(names, usernames, hashed_passwords, "my_cookie_name", "my_signature_key", cookie_expiry_days=30)
-name, authentication_status, username = authenticator.login("Login", "main")
-if authentication_status:
-    st.write(f"Hallo {name}!")
-elif authentication_status == False:
-    st.error("Ungültiger Benutzername oder Passwort")
-elif authentication_status == None:
-    st.warning("Geben Sie Ihr Login und Passwort ein")
-    
+
+USERNAME = "Tobias"
+PASSWORD = "Mosch100"
+st.title("Login Page")
+username = st.text_input("Benutzername")
+password = st.text_input("Passwort", type="password")
+if st.button("Login"):
+    if username == USERNAME and password == PASSWORD:
+        st.success(f"Hallo, {username}!")
+    else:
+        st.error("Ungültiger Benutzername oder Passwort")
+else:
+    st.info("Geben Sie Ihren Benutzernamen und Ihr Passwort ein.")    
 
 def lager_datei(hotel):
     return f"lager_{hotel}.json"
