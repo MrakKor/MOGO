@@ -2,22 +2,7 @@ import math
 import json
 import os
 from datetime import datetime
-import streamlit as st
-
-#Пароль
-
-USERNAME = "Tobias"
-PASSWORD = "Mosch100"
-st.title("Login Page")
-username = st.text_input("Benutzername")
-password = st.text_input("Passwort", type="password")
-if st.button("Login"):
-    if username == USERNAME and password == PASSWORD:
-        st.success(f"Hallo, {username}!")
-    else:
-        st.error("Ungültiger Benutzername oder Passwort")
-else:
-    st.info("Geben Sie Ihren Benutzernamen und Ihr Passwort ein.")    
+import streamlit as st  
 
 def lager_datei(hotel):
     return f"lager_{hotel}.json"
