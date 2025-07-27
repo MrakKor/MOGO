@@ -1,0 +1,34 @@
+[
+  {
+    "zeit": "2025-07-23 12:11:19",
+    "hotel": "blau",
+    "daten": {
+      "Bezüge 240x210": 16,
+      "Bezüge 140x230": 2,
+      "Bettlaken 280x300": 12,
+      "Bettlaken 220x300": 4,
+      "Kissen 80x80": 63,
+      "Duschtuch 70x140": 32,
+      "Handtuch 50x100": 32,
+      "Vorleger 50x90": 16,
+      "Geschirrtücher 60x80": 12,
+      "Transportsack 70x110": 8
+    }
+  },
+  {
+    "zeit": "2025-07-27 17:11:44",
+    "hotel": "blau",
+    "daten": {
+      "Bezüge 240x210": 47,
+      "Bezüge 140x230": 6,
+      "Bettlaken 280x300": 38,
+      "Bettlaken 220x300": 9,
+      "Kissen 80x80": 185,
+      "Duschtuch 70x140": 101,
+      "Handtuch 50x100": 101,
+      "Vorleger 50x90": 51,
+      "Geschirrtücher 60x80": 42,
+      "Transportsack 70x110": 21
+    }
+  }
+]
