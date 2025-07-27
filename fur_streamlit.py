@@ -111,12 +111,12 @@ def main():
                 nicht_speichern = st.button("✖️ Nicht speichern")
             if speichern:
                 for name, menge in daten.items():
-                lager[name] = lager.get(name, 0) + menge
-            speichere_lager(hotel, lager)
-            speichere_history(hotel, daten)
-            st.success("✅ Gespeichert")
+                    lager[name] = lager.get(name, 0) + menge
+                speichere_lager(hotel, lager)
+                speichere_history(hotel, daten)
+                st.success("✅ Gespeichert")
             elif nicht_speichern:
-            st.info("✖️ Nicht gespeichert")
+                st.info("✖️ Nicht gespeichert")
 
   #OBEN
 
@@ -164,17 +164,17 @@ def main():
             st.write("❓ Speichern Sie das Ergebnis und fügen Sie den Lagerbestand hinzu? / Сохранить результат и прибавить запасы на склад?")
             col1, col2 = st.columns(2)
             with col1:
-            speichern = st.button("✅ Speichern")
+                speichern = st.button("✅ Speichern")
             with col2:
-            nicht_speichern = st.button("✖️ Nicht speichern")
+                nicht_speichern = st.button("✖️ Nicht speichern")
             if speichern:
                 for name, menge in daten.items():
-                lager[name] = lager.get(name, 0) + menge
-            speichere_lager(hotel, lager)
-            speichere_history(hotel, daten)
-            st.success("✅ Gespeichert")
+                    lager[name] = lager.get(name, 0) + menge
+                speichere_lager(hotel, lager)
+                speichere_history(hotel, daten)
+                st.success("✅ Gespeichert")
             elif nicht_speichern:
-            st.info("✖️ Nicht gespeichert")
+                st.info("✖️ Nicht gespeichert")
 
     else:
         st.error("Hotel nicht gefunden, überprüfen Sie den Namen / Отель не найден, проверьте название")
