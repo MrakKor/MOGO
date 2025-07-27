@@ -9,7 +9,7 @@ import streamlit_authenticator as stauth
 names = ["Tobias"]
 usernames = ["Tobias"]
 passwords = ["mosch"]
-hashed_passwords = stauth.Hasher(passwords).generate()
+hashed_passwords = stauth.Hasher().generate(passwords)
 authenticator = stauth.Authenticate(names, usernames, hashed_passwords, "my_cookie_name", "my_signature_key", cookie_expiry_days=30)
 name, authentication_status, username = authenticator.login("Login", "main")
 if authentication_status:
