@@ -13,7 +13,7 @@ if not st.session_state.auth_ok:
     pw = st.text_input("Passwort eingeben", type="password")
     if pw == PASSWORD:
         st.session_state.auth_ok = True
-        st.experimental_rerun()
+        st.rerun()
     elif pw:
         st.error("❌ Falsches Passwort")
     st.stop()
