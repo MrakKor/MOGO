@@ -4,6 +4,8 @@ import os
 from datetime import datetime
 import streamlit as st  
 
+st.image("logo.png", width=200)
+
 #Пароль
 PASSWORD = st.secrets["auth"]["password"]
 if "auth_ok" not in st.session_state:
