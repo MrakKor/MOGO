@@ -4,6 +4,20 @@ import os
 from datetime import datetime
 import streamlit as st  
 
+#Пароль
+PASSWORD = st.secrets["auth"]["password"]
+if "auth_ok" not in st.session_state:
+    st.session_state.auth_ok = False
+if not st.session_state.auth_ok:
+    st.title("🔐 Geschützter Zugriff")
+    pw = st.text_input("Passwort eingeben", type="password")
+    if pw == PASSWORD:
+        st.session_state.auth_ok = True
+        st.experimental_rerun()
+    elif pw:
+        st.error("❌ Falsches Passwort")
+    st.stop()
+
 def lager_datei(hotel):
     return f"lager_{hotel}.json"
 def history_datei(hotel):
