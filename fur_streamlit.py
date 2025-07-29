@@ -291,32 +291,31 @@ def verbrauch_berechnen(hotel, zimmer_klein, zimmer_gross):
 
 tatsächlich_verbraucht = {}
 fehlende = []
+    for name, menge in daten.items():
+        verfügbar = lager.get(name, 0)
+        if verfügbar >= menge:
+            lager[name] -= menge
+            tatsächlich_verbraucht[name] = -menge
+        elif verfügbar > 0:
+            lager[name] = 0
+            tatsächlich_verbraucht[name] = -verfügbar
+            fehlende.append(f"{name} (nur {verfügbar} von {menge} verfügbar)")
+        else:
+            fehlende.append(f"{name} (nicht verfügbar, benötigt: {menge})")
 
-for name, menge in daten.items():
-    verfügbar = lager.get(name, 0)
-    if verfügbar >= menge:
-        lager[name] -= menge
-        tatsächlich_verbraucht[name] = -menge
-    elif verfügbar > 0:
-        lager[name] = 0
-        tatsächlich_verbraucht[name] = -verfügbar
-        fehlende.append(f"{name} (nur {verfügbar} von {menge} verfügbar)")
+    if tatsächlich_verbraucht:
+        speichere_lager(hotel, lager)
+        speichere_history(hotel + " (Verbrauch)", tatsächlich_verbraucht)
+        st.success("✅ Folgende Mengen wurden vom Lager abgezogen:")
+        for name, menge in tatsächlich_verbraucht.items():
+            st.write(f"- {name}: {-menge}")
     else:
-        fehlende.append(f"{name} (nicht verfügbar, benötigt: {menge})")
+        st.warning("⚠️ Keine Artikel konnten abgezogen werden")
 
-if tatsächlich_verbraucht:
-    speichere_lager(hotel, lager)
-    speichere_history(hotel + " (Verbrauch)", tatsächlich_verbraucht)
-    st.success("✅ Folgende Mengen wurden vom Lager abgezogen:")
-    for name, menge in tatsächlich_verbraucht.items():
-        st.write(f"- {name}: {-menge}")
-else:
-    st.warning("⚠️ Keine Artikel konnten abgezogen werden")
-
-if fehlende:
-    st.error("❌ Nicht ausreichend im Lager:")
-    for f in fehlende:
-        st.write(f"- {f}")
+    if fehlende:
+        st.error("❌ Nicht ausreichend im Lager:")
+        for f in fehlende:
+            st.write(f"- {f}")
 
 #Меню
 
