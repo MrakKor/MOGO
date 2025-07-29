@@ -390,6 +390,6 @@ elif menu.startswith("5"):
             else:
             	neue_menge = st.number_input(f"🔢 Neue Menge für '{lager_suchname}' \nNeue Menge für '{lager_suchname}' / Новое количество для '{lager_suchname}' \nNeue Menge für '{lager_suchname}':", min_value=0, step=1)
             	if st.button("Speichern / Сохранить"):
-            	    lager[lager_suchname] = neue_menge
+                    lager[lager_suchname] = neue_menge
                     set_lager(hotel, lager)
-            	    st.success("✅ Erneut gespeichert")
+                    st.success("✅ Erneut gespeichert")
