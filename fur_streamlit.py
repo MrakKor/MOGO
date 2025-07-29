@@ -250,26 +250,6 @@ def zeige_history(hotel):
             st.write(f"    {name}: {menge}")
         st.write("")
 
-#Очистка склада
-
-def lager_loeschen(hotel):
-    st.write("❗ Sind Sie sicher, dass Sie das Lager räumen möchten? / Вы уверены, что хотите очистить склад?")
-    col1, col2 = st.columns(2)
-    with col1:
-        ja = st.button("✅ Ja")
-    with col2:
-        nein = st.button("✖️ Nein")
-    if ja:
-        pfad = lager_datei(hotel)
-        if os.path.exists(pfad):
-            os.remove(pfad)
-            st.session_state.pop(f"lager_{hotel}", None)
-            st.success(f"✅ Das Lager für {hotel} ist geräumt")
-        else:
-            st.error("✖️ Die Lagerdatei wurde nicht gefunden")
-    elif nein:
-        st.info("✖️ Vorgang abgebrochen / Операция отменена")
-
 #Вычет со склада
 
 def verbrauch_berechnen(hotel, zimmer_klein, zimmer_gross):
@@ -340,8 +320,7 @@ menu = st.sidebar.radio("", (
     "1 – 🔋Wäsche berechnen / Рассчитать белье",
     "2 – 📦Lagerreste anzeigen / Показать остатки на складе",
     "3 – ⏳Auftragsverlauf anzeigen / Показать историю заказов",
-    "4 – 🧹Lager räumen / Очистить склад",
-    "5 – 🖋️ Lager manuell bearbeiten / Редактировать склад вручную"
+    "4 – 🖋️ Lager manuell bearbeiten / Редактировать склад вручную"
 ))
 
 if menu.startswith("1"):
@@ -357,11 +336,6 @@ elif menu.startswith("3"):
     if hotel:
         zeige_history(hotel)
 
-elif menu.startswith("4"):
-    hotel = st.text_input("🔍 Geben Sie den Namen des Hotels ein (Oben / Blau) / Введите название отеля:").strip().lower()
-    if hotel:
-        lager_loeschen(hotel)
-
 elif menu.startswith("0"):
     hotel = st.text_input("🔍 Geben Sie den Namen des Hotels ein (Oben / Blau) / Введите название отеля:").strip().lower()
     if hotel:
@@ -370,7 +344,7 @@ elif menu.startswith("0"):
         if st.button("Vom Lager abschreiben / Списать со склада"):
             verbrauch_berechnen(hotel, zimmer_klein, zimmer_gross)
 
-elif menu.startswith("5"):
+elif menu.startswith("4"):
     hotel = st.text_input("🔍 Geben Sie den Namen des Hotels ein (Oben / Blau) / Введите название отеля:").strip().lower()
     if hotel:
         lager = get_lager(hotel)
