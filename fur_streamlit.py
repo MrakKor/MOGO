@@ -260,6 +260,8 @@ def lager_loeschen(hotel):
 def verbrauch_berechnen(hotel, zimmer_klein, zimmer_gross):
     lager = lade_lager(hotel)
     daten = {}
+    tatsächlich_verbraucht = {}
+    fehlende = []
     if hotel == "blau":
         daten = {
             "Bezüge 240x210": reserve_10(zimmer_klein + zimmer_gross),
@@ -289,8 +291,6 @@ def verbrauch_berechnen(hotel, zimmer_klein, zimmer_gross):
         st.error("Hotel nicht gefunden / Отель не найден")
         return
 
-tatsächlich_verbraucht = {}
-fehlende = []
     for name, menge in daten.items():
         verfügbar = lager.get(name, 0)
         if verfügbar >= menge:
