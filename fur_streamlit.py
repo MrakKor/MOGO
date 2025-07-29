@@ -31,6 +31,20 @@ def lade_lager(hotel):
         with open(pfad, "r", encoding="utf-8") as f:
             return json.load(f)
     return {}
+    
+#Сохранения для моментальной подгрузки склада
+
+def get_lager(hotel):
+    key = f"lager_{hotel}"
+    if key in st.session_state:
+        return st.session_state[key]
+    lager = lade_lager(hotel)
+    st.session_state[key] = lager
+    return lager
+
+def set_lager(hotel, lager):
+    st.session_state[f"lager_{hotel}"] = lager
+    speichere_lager(hotel, lager)
 
 #Сохранение лагеря и даты
 
@@ -72,9 +86,9 @@ def main():
     if not hotel:
         return
 
-    lager = lade_lager(hotel)
+    lager = get_lager(hotel)
     
-    #BLAU
+#BLAU
     
     if hotel == "blau":
         zimmer_klein = st.number_input("🔹 Geben Sie die Anzahl der kleinen Zimmer ein / Введите количество маленьких комнат:", min_value=0, step=1)
@@ -128,7 +142,7 @@ def main():
             if speichern:
                 for name, menge in daten.items():
                     lager[name] = lager.get(name, 0) + menge
-                speichere_lager(hotel, lager)
+                set_lager(hotel, lager)
                 speichere_history(hotel, daten)
                 st.success("✅ Gespeichert")
             elif nicht_speichern:
@@ -186,7 +200,7 @@ def main():
             if speichern:
                 for name, menge in daten.items():
                     lager[name] = lager.get(name, 0) + menge
-                speichere_lager(hotel, lager)
+                set_lager(hotel, lager)
                 speichere_history(hotel, daten)
                 st.success("✅ Gespeichert")
             elif nicht_speichern:
@@ -198,7 +212,7 @@ def main():
 #Склад
 
 def zeige_lager(hotel):
-    lager = lade_lager(hotel)
+    lager = get_lager(hotel)
     if not lager:
         st.info("Das Lager ist leer oder nicht initialisiert")
         return
@@ -249,6 +263,7 @@ def lager_loeschen(hotel):
         pfad = lager_datei(hotel)
         if os.path.exists(pfad):
             os.remove(pfad)
+            st.session_state.pop(f"lager_{hotel}", None)
             st.success(f"✅ Das Lager für {hotel} ist geräumt")
         else:
             st.error("✖️ Die Lagerdatei wurde nicht gefunden")
@@ -258,7 +273,7 @@ def lager_loeschen(hotel):
 #Вычет со склада
 
 def verbrauch_berechnen(hotel, zimmer_klein, zimmer_gross):
-    lager = lade_lager(hotel)
+    lager = get_lager(hotel)
     daten = {}
     tatsächlich_verbraucht = {}
     fehlende = []
@@ -304,7 +319,7 @@ def verbrauch_berechnen(hotel, zimmer_klein, zimmer_gross):
             fehlende.append(f"{name} (nicht verfügbar, benötigt: {menge})")
 
     if tatsächlich_verbraucht:
-        speichere_lager(hotel, lager)
+        set_lager(hotel, lager)
         speichere_history(hotel + " (Verbrauch)", tatsächlich_verbraucht)
         st.success("✅ Folgende Mengen wurden vom Lager abgezogen:")
         for name, menge in tatsächlich_verbraucht.items():
@@ -358,7 +373,7 @@ elif menu.startswith("0"):
 elif menu.startswith("5"):
     hotel = st.text_input("🔍 Geben Sie den Namen des Hotels ein (Oben / Blau) / Введите название отеля:").strip().lower()
     if hotel:
-        lager = lade_lager(hotel)
+        lager = get_lager(hotel)
         st.write("📋 Aktuelles Lager:")
         for name, menge in lager.items():
             if name != "__zeit":
@@ -376,5 +391,5 @@ elif menu.startswith("5"):
             	neue_menge = st.number_input(f"🔢 Neue Menge für '{lager_suchname}' \nNeue Menge für '{lager_suchname}' / Новое количество для '{lager_suchname}' \nNeue Menge für '{lager_suchname}':", min_value=0, step=1)
             	if st.button("Speichern / Сохранить"):
             	         lager[lager_suchname] = neue_menge
-            	         speichere_lager(hotel, lager)
+                         set_lager(hotel, lager)
             	         st.success("✅ Erneut gespeichert")
