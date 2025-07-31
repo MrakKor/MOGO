@@ -20,7 +20,7 @@ if not st.session_state.auth_ok:
         st.error("❌ Falsches Passwort")
     st.stop()
 
-hotel_liste = ["", "BLAU", "OBEN"] 
+hotel_liste = ["", "blau", "oben"] 
 st.session_state.hotel = st.selectbox(
     "🏨 Wählen Sie ein Hotel / Выберите отель:",
     options=hotel_liste,
