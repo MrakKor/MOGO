@@ -258,6 +258,7 @@ def zeige_history(hotel):
     if not history:
         st.info("Die Geschichte ist leer")
         return
+    history = list(reversed(history))
     st.write("⏳ Auftragsverlauf / История заказов:")
     for eintrag in history:
         zeit = eintrag.get("zeit", "die Zeit ist unbekannt")
