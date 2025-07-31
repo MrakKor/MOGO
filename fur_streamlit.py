@@ -20,6 +20,13 @@ if not st.session_state.auth_ok:
         st.error("❌ Falsches Passwort")
     st.stop()
 
+hotel_liste = ["", "BLAU", "OBEN"] 
+st.session_state.hotel = st.selectbox(
+    "🏨 Wählen Sie ein Hotel / Выберите отель:",
+    options=hotel_liste,
+    index=hotel_liste.index(st.session_state.hotel) if st.session_state.get("hotel") in hotel_liste else 0
+)
+
 def lager_datei(hotel):
     return f"lager_{hotel}.json"
 def history_datei(hotel):
@@ -332,9 +339,6 @@ def verbrauch_berechnen(hotel, zimmer_klein, zimmer_gross):
             st.write(f"- {f}")
 
 #Меню
-if "hotel" not in st.session_state:
-    st.session_state.hotel = ""
-st.session_state.hotel = st.text_input("🔍 Geben Sie den Namen des Hotels ein (Oben / Blau) / Введите название отеля:", value=st.session_state.hotel).strip().lower()
 
 st.sidebar.title("▫️Aktion auswählen:")
 menu = st.sidebar.radio("", (
@@ -346,31 +350,35 @@ menu = st.sidebar.radio("", (
 ))
 
 if menu.startswith("1"):
-    main()
+    hotel = st.session_state.hotel
+    if hotel:
+        main()
+    else:
+        st.warning("Bitte wählen Sie ein Hotel")
 
 elif menu.startswith("2"):
     hotel = st.session_state.hotel
     if hotel:
         zeige_lager(hotel)
     else:
-        st.warning("Bitte geben Sie einen Hotelnamen ein")
+        st.warning("Bitte wählen Sie ein Hotel")
 
 elif menu.startswith("3"):
     hotel = st.session_state.hotel
     if hotel:
         zeige_history(hotel)
     else:
-        st.warning("Geben Sie einen Hotelnamen ein")
+        st.warning("Bitte wählen Sie ein Hotel")
 
 elif menu.startswith("0"):
     hotel = st.session_state.hotel
     if hotel:
         zimmer_klein = st.number_input("🔹 Wie viele kleine Zimmer wurden gereinigt? / Сколько маленьких комнат было убрано?", min_value=0, step=1)
-        zimmer_gross = st.number_input("🔷 Wie viele große Zimmer wurden gereinigt? Сколько больших комнат было убрано?", min_value=0, step=1)
+        zimmer_gross = st.number_input("🔷 Wie viele große Zimmer wurden gereinigt? / Сколько больших комнат было убрано?", min_value=0, step=1)
         if st.button("Vom Lager abschreiben / Списать со склада"):
             verbrauch_berechnen(hotel, zimmer_klein, zimmer_gross)
     else:
-        st.warning("Bitte geben Sie einen Hotelnamen ein")
+        st.warning("Bitte wählen Sie ein Hotel")
 
 elif menu.startswith("4"):
     hotel = st.session_state.hotel
@@ -388,12 +396,12 @@ elif menu.startswith("4"):
                     lager_suchname = key
                     break
             if lager_suchname is None:
-            	st.error("✖️ Diese Position ist nicht auf Lager")
+                st.error("✖️ Diese Position ist nicht auf Lager")
             else:
-            	neue_menge = st.number_input(f"🔢 Neue Menge für '{lager_suchname}' \nNeue Menge für '{lager_suchname}' / Новое количество для '{lager_suchname}' \nNeue Menge für '{lager_suchname}':", min_value=0, step=1)
-            	if st.button("Speichern / Сохранить"):
+                neue_menge = st.number_input(f"🔢 Neue Menge für '{lager_suchname}' / Новое количество для '{lager_suchname}':", min_value=0, step=1)
+                if st.button("Speichern / Сохранить"):
                     lager[lager_suchname] = neue_menge
                     set_lager(hotel, lager)
                     st.success("✅ Erneut gespeichert")
     else:
-        st.warning("Bitte geben Sie einen Hotelnamen ein")
+        st.warning("Bitte wählen Sie ein Hotel")
