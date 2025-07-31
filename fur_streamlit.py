@@ -137,6 +137,7 @@ def main():
                 "Geschirrtücher 60x80": geschirrtuch,
                 "Transportsack 70x110": sack
             }
+            st.session_state["aktuelle_daten"] = daten
             st.write("❓ Speichern Sie das Ergebnis und fügen Sie den Lagerbestand hinzu? / Сохранить результат и прибавить запасы на склад?")
             col1, col2 = st.columns(2)
             with col1:
@@ -144,6 +145,7 @@ def main():
             with col2:
                 nicht_speichern = st.button("✖️ Nicht speichern", key="blau_nicht_speichern")
             if speichern:
+                daten = st.session_state.get("aktuelle_daten", {})
                 for name, menge in daten.items():
                     lager[name] = lager.get(name, 0) + menge
                 set_lager(hotel, lager)
@@ -195,6 +197,7 @@ def main():
                 "Vorleger 50x90": reserve_20(fussmatte),
                 "Geschirrtücher 60x80": geschirrtuch,
             }
+            st.session_state["aktuelle_daten"] = daten
             st.write("❓ Speichern Sie das Ergebnis und fügen Sie den Lagerbestand hinzu? / Сохранить результат и прибавить запасы на склад?")
             col1, col2 = st.columns(2)
             with col1:
@@ -202,6 +205,7 @@ def main():
             with col2:
                 nicht_speichern = st.button("✖️ Nicht speichern", key="oben_nicht_speichern")
             if speichern:
+                daten = st.session_state.get("aktuelle_daten", {})
                 for name, menge in daten.items():
                     lager[name] = lager.get(name, 0) + menge
                 set_lager(hotel, lager)
