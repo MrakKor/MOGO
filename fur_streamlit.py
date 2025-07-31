@@ -219,6 +219,7 @@ def main():
             col1, col2 = st.columns(2)
             with col1:
                 if st.button("✅ Speichern", key="oben_speichern"):
+                    lager = get_lager(hotel)
                     daten = st.session_state.get("aktuelle_daten", {})
                     for name, menge in daten.items():
                         lager[name] = lager.get(name, 0) + menge
