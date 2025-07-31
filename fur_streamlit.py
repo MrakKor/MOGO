@@ -200,7 +200,7 @@ def main():
             with col1:
                 speichern = st.button("✅ Speichern", key="oben_speichern")
             with col2:
-                nicht_speichern = st.button("✖️ Nicht speichern"? key="oben_nicht_speichern")
+                nicht_speichern = st.button("✖️ Nicht speichern", key="oben_nicht_speichern")
             if speichern:
                 for name, menge in daten.items():
                     lager[name] = lager.get(name, 0) + menge
