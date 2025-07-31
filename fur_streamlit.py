@@ -304,7 +304,7 @@ def verbrauch_berechnen(hotel, zimmer_klein, zimmer_gross):
 
     if tatsächlich_verbraucht:
         set_lager(hotel, lager)
-        speichere_history(hotel + " (Verbrauch)", tatsächlich_verbraucht)
+        speichere_history(hotel, tatsächlich_verbraucht)
         st.success("✅ Folgende Mengen wurden vom Lager abgezogen:")
         for name, menge in tatsächlich_verbraucht.items():
             st.write(f"- {name}: {-menge}")
