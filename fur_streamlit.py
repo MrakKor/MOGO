@@ -83,6 +83,10 @@ def reserve_10(wert, prozent=10):
     
 def main():
     hotel = st.text_input("🔍 Geben Sie den Namen des Hotels ein (Oben / Blau) / Введите название отеля:").strip().lower()
+    if "last_hotel" in st.session_state and st.session_state.last_hotel != hotel:
+        st.session_state.pop(f"lager_{st.session_state.last_hotel}", None)
+    st.session_state.last_hotel = hotel
+
     if not hotel:
         return
 
@@ -136,9 +140,9 @@ def main():
             st.write("❓ Speichern Sie das Ergebnis und fügen Sie den Lagerbestand hinzu? / Сохранить результат и прибавить запасы на склад?")
             col1, col2 = st.columns(2)
             with col1:
-                speichern = st.button("✅ Speichern")
+                speichern = st.button("✅ Speichern", key="blau_speichern")
             with col2:
-                nicht_speichern = st.button("✖️ Nicht speichern")
+                nicht_speichern = st.button("✖️ Nicht speichern", key="blau_nicht_speichern")
             if speichern:
                 for name, menge in daten.items():
                     lager[name] = lager.get(name, 0) + menge
@@ -194,9 +198,9 @@ def main():
             st.write("❓ Speichern Sie das Ergebnis und fügen Sie den Lagerbestand hinzu? / Сохранить результат и прибавить запасы на склад?")
             col1, col2 = st.columns(2)
             with col1:
-                speichern = st.button("✅ Speichern")
+                speichern = st.button("✅ Speichern", key="oben_speichern")
             with col2:
-                nicht_speichern = st.button("✖️ Nicht speichern")
+                nicht_speichern = st.button("✖️ Nicht speichern"? key="oben_nicht_speichern")
             if speichern:
                 for name, menge in daten.items():
                     lager[name] = lager.get(name, 0) + menge
