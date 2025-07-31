@@ -356,8 +356,6 @@ elif menu.startswith("2"):
         st.warning("Bitte geben Sie einen Hotelnamen ein")
 
 elif menu.startswith("3"):
-    if not st.session_state.get("hotel"):
-        st.session_state.hotel = st.text_input("🏨 Hotelname eingeben:", "").strip().lower()
     hotel = st.session_state.hotel
     if hotel:
         zeige_history(hotel)
