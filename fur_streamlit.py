@@ -3,6 +3,9 @@ import json
 import os
 from datetime import datetime
 import streamlit as st  
+import tempfile
+from json import JSONDecodeError
+import traceback
 
 st.image("logo.png", width=200)
 
@@ -37,8 +40,11 @@ def history_datei(hotel):
 def lade_lager(hotel):
     pfad = lager_datei(hotel)
     if os.path.exists(pfad):
-        with open(pfad, "r", encoding="utf-8") as f:
-            return json.load(f)
+        try:
+            with open(pfad, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except (JSONDecodeError, IOError):
+            return {}  
     return {}
     
 #Сохранения для моментальной подгрузки склада
@@ -60,10 +66,21 @@ def set_lager(hotel, lager):
 MAX_HISTORY = 50
 
 def speichere_lager(hotel, lager):
-    lager["__zeit"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    pfad = lager_datei(hotel)
-    with open(pfad, "w", encoding="utf-8") as f:
-        json.dump(lager, f, ensure_ascii=False, indent=2)
+    try:
+        lager["__zeit"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        pfad = lager_datei(hotel)
+        atomic_write(pfad, lager)
+    except Exception:
+        st.error("Fehler beim Speichern des Lagers"); st.text(traceback.format_exc())
+
+def atomic_write(path, data):
+    dirn = os.path.dirname(path) or "."
+    with tempfile.NamedTemporaryFile("w", delete=False, dir=dirn, encoding="utf-8") as tf:
+        json.dump(data, tf, ensure_ascii=False, indent=2)
+        tf.flush()
+        os.fsync(tf.fileno())
+        tempname = tf.name
+    os.replace(tempname, path)  
 
 def speichere_history(hotel, daten):
     pfad = history_datei(hotel)
@@ -74,13 +91,20 @@ def speichere_history(hotel, daten):
     }
     history = []
     if os.path.exists(pfad):
-        with open(pfad, "r", encoding="utf-8") as f:
-            history = json.load(f)
+        try:
+            with open(pfad, "r", encoding="utf-8") as f:
+                history = json.load(f)
+                if not isinstance(history, list):
+                    history = []
+        except (JSONDecodeError, IOError):
+            history = []
     history.append(eintrag)
     if len(history) > MAX_HISTORY:
         history = history[-MAX_HISTORY:]
-    with open(pfad, "w", encoding="utf-8") as f:
-        json.dump(history, f, ensure_ascii=False, indent=2)
+    try:
+        atomic_write(pfad, history)
+    except Exception:
+        st.error("Fehler beim Schreiben der Historie in die Datei"); st.text(traceback.format_exc())
 
 #Резерв
 
