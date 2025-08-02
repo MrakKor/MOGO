@@ -352,6 +352,12 @@ menu = st.sidebar.radio("", (
     "4 – 🖋️ Lager manuell bearbeiten / Редактировать склад вручную"
 ))
 
+if "last_menu" not in st.session_state:
+    st.session_state.last_menu = None
+if st.session_state.last_menu != menu:
+    st.session_state.berechnet = False
+    st.session_state.last_menu = menu
+
 if menu.startswith("1"):
     hotel = st.session_state.hotel
     if hotel:
