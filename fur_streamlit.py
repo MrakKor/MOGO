@@ -415,26 +415,32 @@ elif menu.startswith("0"):
 
 elif menu.startswith("4"):
     hotel = st.session_state.hotel
-    if hotel:
-        lager = get_lager(hotel)
-        st.write("📋 Aktuelles Lager:")
-        for name, menge in lager.items():
-            if name != "__zeit":
-                st.write(f"- {name}: {menge}")
-        name = st.text_input("✏️ Name der Position zur Änderung / Название позиции для изменения:").strip().lower()
-        if name:
-            lager_suchname = None
-            for key in lager:
-                if key.lower() == name and key != "__zeit":
-                    lager_suchname = key
-                    break
-            if lager_suchname is None:
-                st.error("✖️ Diese Position ist nicht auf Lager")
-            else:
-                neue_menge = st.number_input(f"🔢 Neue Menge für '{lager_suchname}' / Новое количество для '{lager_suchname}':", min_value=0, step=1)
-                if st.button("Speichern / Сохранить"):
-                    lager[lager_suchname] = neue_menge
-                    set_lager(hotel, lager)
-                    st.success("✅ Erneut gespeichert")
-    else:
+    if not hotel:
         st.warning("Bitte wählen Sie ein Hotel")
+    else:
+        st.subheader("✏️ Lager manuell bearbeiten / Редактировать склад вручную")
+
+        lager = get_lager(hotel)
+
+        if not lager:
+            st.info("📭 Lager ist leer. Keine Daten zum Bearbeiten")
+        else:
+            with st.form("lager_editor_form"):
+                edited_lager = {}
+                st.write("📅 Datum der letzten Änderung / Дата последнего изменения:")
+                zeit = lager.get("__zeit", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+                neue_zeit = st.text_input("⏱️ Änderbares Zeitfeld (YYYY-MM-DD HH:MM:SS):", value=zeit)
+
+                st.write("📦 Lagerdaten / Данные склада:")
+
+                for key, value in lager.items():
+                    if key == "__zeit":
+                        continue
+                    neue_menge = st.number_input(f"{key}:", min_value=0, value=value, step=1)
+                    edited_lager[key] = neue_menge
+
+                submitted = st.form_submit_button("💾 Speichern / Сохранить")
+                if submitted:
+                    edited_lager["__zeit"] = neue_zeit.strip() or datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    set_lager(hotel, edited_lager)
+                    st.success("✅ Lager wurde gespeichert")
