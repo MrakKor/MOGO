@@ -6,7 +6,6 @@ import streamlit as st
 import tempfile
 from json import JSONDecodeError
 import traceback
-from streamlit.runtime.scriptrunner import rerun
 
 st.image("logo.png", width=200)
 
@@ -453,4 +452,4 @@ elif menu.startswith("4"):
                     edited_lager["__zeit"] = valid_zeit
                     set_lager(hotel, edited_lager, manuelle_datum=True)  
                     st.success("✅ Lager wurde gespeichert")
-                    rerun()
+                    st.experimental_rerun()
