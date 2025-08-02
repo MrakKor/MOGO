@@ -67,7 +67,7 @@ MAX_HISTORY = 50
 
 def speichere_lager(hotel, lager, manuelle_datum=False):
     try:
-        if not manuelle_datum:
+        if not manuelle_datum or "__zeit" not in lager:
             lager["__zeit"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         pfad = lager_datei(hotel)
         atomic_write(pfad, lager)
@@ -452,3 +452,4 @@ elif menu.startswith("4"):
                     edited_lager["__zeit"] = valid_zeit
                     set_lager(hotel, edited_lager, manuelle_datum=True)  
                     st.success("✅ Lager wurde gespeichert")
+                        st.experimental_rerun()
