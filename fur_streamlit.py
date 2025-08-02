@@ -57,21 +57,23 @@ def get_lager(hotel):
     st.session_state[key] = lager
     return lager
 
-def set_lager(hotel, lager):
+def set_lager(hotel, lager, manuelle_datum=False):
     st.session_state[f"lager_{hotel}"] = lager
-    speichere_lager(hotel, lager)
+    speichere_lager(hotel, lager, manuelle_datum=manuelle_datum)
 
 #Сохранение лагеря и даты
 
 MAX_HISTORY = 50
 
-def speichere_lager(hotel, lager):
+def speichere_lager(hotel, lager, manuelle_datum=False):
     try:
-        lager["__zeit"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        if not manuelle_datum:
+            lager["__zeit"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         pfad = lager_datei(hotel)
         atomic_write(pfad, lager)
     except Exception:
-        st.error("Fehler beim Speichern des Lagers"); st.text(traceback.format_exc())
+        st.error("Fehler beim Speichern des Lagers")
+        st.text(traceback.format_exc())
 
 def atomic_write(path, data):
     dirn = os.path.dirname(path) or "."
@@ -441,6 +443,12 @@ elif menu.startswith("4"):
 
                 submitted = st.form_submit_button("💾 Speichern / Сохранить")
                 if submitted:
-                    edited_lager["__zeit"] = neue_zeit.strip() or datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                    set_lager(hotel, edited_lager)
+                    try:
+                        datetime.strptime(neue_zeit.strip(), "%Y-%m-%d %H:%M:%S")
+                        valid_zeit = neue_zeit.strip()
+                    except ValueError:
+                        st.error("❌ Ungültiges Datumsformat")
+                        valid_zeit = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    edited_lager["__zeit"] = valid_zeit
+                    set_lager(hotel, edited_lager, manuelle_datum=True)  
                     st.success("✅ Lager wurde gespeichert")
