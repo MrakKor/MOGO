@@ -71,8 +71,8 @@ for url, sheet_name in zip(json_urls, sheet_names):
         worksheet.batch_clear(["A1:Z1000"])
         header = [str(k) if k is not None else "" for k in data[0].keys()]
         worksheet.append_row(header)
-        rows = [list(row.values()) for row in data]
-        worksheet.update("A2", rows)  
+        rows = [[key, value] for key, value in daten.items()]
+        worksheet.update("A2", rows)
 
 def lager_datei(hotel):
     return f"lager_{hotel}.json"
