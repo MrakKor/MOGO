@@ -46,9 +46,12 @@ for url, sheet_name in zip(json_urls, sheet_names):
     if data and isinstance(data, list) and len(data) > 0:
         header = list(data[0].keys())
         rows = [[row.get(k, "") for k in header] for row in data]
-        worksheet.batch_clear(["A1:Z1000"])
-        worksheet.update(f"A1:{colnum_to_letter(len(header))}{len(rows)+1}", [header] + rows, value_input_option='USER_ENTERED')
-
+        end_col_letter = colnum_to_letter(len(header))
+        end_row = len(rows) + 1
+        # очищаем нужный диапазон
+        worksheet.batch_clear([f"A1:{end_col_letter}{1000}"])
+        worksheet.update(f"A1:{end_col_letter}{end_row}", [header] + rows, value_input_option='USER_ENTERED')
+        
 st.image("logo.png", width=200)
 
 #Пароль
