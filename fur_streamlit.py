@@ -347,17 +347,20 @@ def zeige_history(hotel):
         st.write("⏳ Auftragsverlauf / История заказов:")
         history = {}
         for row in reversed(rows[-MAX_HISTORY:]):
-            zeit, hotel_, name, menge = row
+            zeit, hotel_, daten_json = row
+            try:
+                daten = json.loads(daten_json)
+            except json.JSONDecodeError:
+                daten = {}
             key = f"{zeit} - {hotel_}"
             if key not in history:
                 history[key] = []
-            history[key].append((name, menge))
-
+            for name, menge in daten.items():
+                history[key].append((name, menge))
         for key, items in history.items():
             with st.expander(f"📦 {key}"):
                 for name, menge in items:
                     st.markdown(f"- **{name}**: {menge}")
-
     except Exception as e:
         st.error(f"Fehler beim Laden der Historie: {e}")
 
