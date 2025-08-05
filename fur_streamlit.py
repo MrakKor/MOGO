@@ -9,6 +9,7 @@ import traceback
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import requests
+from gspread.exceptions import WorksheetNotFound
 
 #ТАБЛИЦЫ
 SERVICE_ACCOUNT_INFO = st.secrets["gcp_service_account"]
@@ -29,19 +30,11 @@ json_urls = [
 ]
 sheet_names = ["history_blau", "history_oben", "lager_blau", "lager_oben"]
 
-def colnum_string(n):
-    string = ""
-    while n > 0:
-        n, remainder = divmod(n - 1, 26)
-        string = chr(65 + remainder) + string
-    return string
-
 for url, sheet_name in zip(json_urls, sheet_names):
     try:
         worksheet = spreadsheet.worksheet(sheet_name)
     except gspread.exceptions.WorksheetNotFound:
         worksheet = spreadsheet.add_worksheet(title=sheet_name, rows="1000", cols="50")
-
     response = requests.get(url)
     try:
         data = response.json()
@@ -52,11 +45,10 @@ for url, sheet_name in zip(json_urls, sheet_names):
     if isinstance(data, list) and len(data) > 0:
         worksheet.batch_clear(["A1:Z1000"])
         header = [str(k) if k is not None else "" for k in data[0].keys()]
-        worksheet.append_row(header)
         rows = [[row.get(col, "") for col in header] for row in data]
-        end_col = colnum_string(len(header))
-        end_row = len(rows) + 1  
-        worksheet.update(f"A2:{end_col}{end_row}", rows)
+        end_col = chr(64 + len(header))  
+        end_row = len(rows) + 1
+        worksheet.update(f"A1:{end_col}{end_row}", [header] + rows)
 
 st.image("logo.png", width=200)
 
