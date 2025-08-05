@@ -47,7 +47,7 @@ for url, sheet_name in zip(json_urls, sheet_names):
         header = list(data[0].keys())
         def normalize_cell_value(val):
             if isinstance(val, dict):
-                return json.dumps(val, ensure_ascii=False)  # превращает словарь в строку
+                return json.dumps(val, ensure_ascii=False)  
             return val
         rows = [
             [normalize_cell_value(row.get(k, "")) for k in header]
@@ -333,12 +333,20 @@ def zeige_history(hotel):
         if not rows:
             st.info("Die Geschichte ist leer")
             return
-
         st.write("⏳ Auftragsverlauf / История заказов:")
+        history = {}
         for row in reversed(rows[-MAX_HISTORY:]):
             zeit, hotel_, name, menge = row
-            st.write(f"- [{zeit}] Hotel: {hotel_}")
-            st.write(f"    {name}: {menge}")
+            key = f"{zeit} - {hotel_}"
+            if key not in history:
+                history[key] = []
+            history[key].append((name, menge))
+
+        for key, items in history.items():
+            with st.expander(f"📦 {key}"):
+                for name, menge in items:
+                    st.markdown(f"- **{name}**: {menge}")
+
     except Exception as e:
         st.error(f"Fehler beim Laden der Historie: {e}")
 
