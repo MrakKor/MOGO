@@ -35,45 +35,6 @@ st.session_state.hotel = st.selectbox(
     index=hotel_liste.index(st.session_state.hotel) if st.session_state.get("hotel") in hotel_liste else 0
 )
 
-#ТАБЛИЦЫ
-SERVICE_ACCOUNT_INFO = st.secrets["gcp_service_account"]
-
-scope = [
-    "https://www.googleapis.com/auth/spreadsheets",
-    "https://www.googleapis.com/auth/drive"
-]
-credentials = ServiceAccountCredentials.from_json_keyfile_dict(SERVICE_ACCOUNT_INFO, scope)
-client = gspread.authorize(credentials)
-spreadsheet = client.open("mogo")
-
-json_urls = [
-    "https://raw.githubusercontent.com/MrakKor/MOGO/main/history_blau_old.json",
-    "https://raw.githubusercontent.com/MrakKor/MOGO/main/history_oben_old.json",
-    "https://raw.githubusercontent.com/MrakKor/MOGO/main/lager_blau_old.json",
-    "https://raw.githubusercontent.com/MrakKor/MOGO/main/lager_oben_old.json"
-]
-sheet_names = ["history_blau", "history_oben", "lager_blau", "lager_oben"]
-
-for url, sheet_name in zip(json_urls, sheet_names):
-    try:
-        worksheet = spreadsheet.worksheet(sheet_name)
-    except gspread.exceptions.WorksheetNotFound:
-        worksheet = spreadsheet.add_worksheet(title=sheet_name, rows="1000", cols="50")
-
-    response = requests.get(url)
-    try:
-        data = response.json()
-    except JSONDecodeError:
-        st.error(f"Fehler beim Parsen von JSON von {url}")
-        continue
-
-    if isinstance(data, list) and len(data) > 0:
-        worksheet.batch_clear(["A1:Z1000"])
-        header = [str(k) if k is not None else "" for k in data[0].keys()]
-        worksheet.append_row(header)
-        rows = [[key, value] for key, value in daten.items()]
-        worksheet.update("A2", rows)
-
 def lager_datei(hotel):
     return f"lager_{hotel}.json"
 def history_datei(hotel):
@@ -478,3 +439,42 @@ elif menu.startswith("4"):
                     edited_lager["__zeit"] = valid_zeit
                     set_lager(hotel, edited_lager, manuelle_datum=True)  
                     st.success("✅ Lager wurde gespeichert")
+
+#ТАБЛИЦЫ
+SERVICE_ACCOUNT_INFO = st.secrets["gcp_service_account"]
+
+scope = [
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive"
+]
+credentials = ServiceAccountCredentials.from_json_keyfile_dict(SERVICE_ACCOUNT_INFO, scope)
+client = gspread.authorize(credentials)
+spreadsheet = client.open("mogo")
+
+json_urls = [
+    "https://raw.githubusercontent.com/MrakKor/MOGO/main/history_blau_old.json",
+    "https://raw.githubusercontent.com/MrakKor/MOGO/main/history_oben_old.json",
+    "https://raw.githubusercontent.com/MrakKor/MOGO/main/lager_blau_old.json",
+    "https://raw.githubusercontent.com/MrakKor/MOGO/main/lager_oben_old.json"
+]
+sheet_names = ["history_blau", "history_oben", "lager_blau", "lager_oben"]
+
+for url, sheet_name in zip(json_urls, sheet_names):
+    try:
+        worksheet = spreadsheet.worksheet(sheet_name)
+    except gspread.exceptions.WorksheetNotFound:
+        worksheet = spreadsheet.add_worksheet(title=sheet_name, rows="1000", cols="50")
+
+    response = requests.get(url)
+    try:
+        data = response.json()
+    except JSONDecodeError:
+        st.error(f"Fehler beim Parsen von JSON von {url}")
+        continue
+
+    if isinstance(data, list) and len(data) > 0:
+        worksheet.batch_clear(["A1:Z1000"])
+        header = [str(k) if k is not None else "" for k in data[0].keys()]
+        worksheet.append_row(header)
+        rows = [[key, value] for key, value in daten.items()]
+        worksheet.update("A2", rows)
