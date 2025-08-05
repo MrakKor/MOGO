@@ -38,7 +38,10 @@ st.session_state.hotel = st.selectbox(
 #ТАБЛИЦЫ
 SERVICE_ACCOUNT_INFO = st.secrets["gcp_service_account"]
 
-scope = ["https://www.googleapis.com/auth/spreadsheets"]
+scope = [
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive"
+]
 credentials = ServiceAccountCredentials.from_json_keyfile_dict(SERVICE_ACCOUNT_INFO, scope)
 client = gspread.authorize(credentials)
 spreadsheet = client.open("mogo")
