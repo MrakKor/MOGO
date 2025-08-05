@@ -66,7 +66,8 @@ for url, sheet_name in zip(json_urls, sheet_names):
 
     if isinstance(data, list) and len(data) > 0:
         worksheet.clear()
-        worksheet.append_row(list(data[0].keys()))
+        header = [str(k) if k is not None else "" for k in data[0].keys()]
+        worksheet.append_row(header)
         for row in data:
             cleaned_row = [str(v) if v is not None else "" for v in row.values()]
             worksheet.append_row(cleaned_row)
