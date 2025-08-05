@@ -176,9 +176,6 @@ def main():
             st.session_state.berechnet = True
 
         if st.session_state.get("berechnet"):
-            st.write("📋 Die Menge an Bettwäsche und Handtüchern, die bestellt werden muss:")
-            for name, menge in st.session_state.aktuelle_daten.items():
-                st.write(f"- {name}: {menge}")
             st.write("❓ Speichern Sie das Ergebnis und fügen Sie den Lagerbestand hinzu? / Сохранить результат и прибавить запасы на склад?")
             col1, col2 = st.columns(2)
             with col1:
