@@ -12,6 +12,13 @@ import requests
 from gspread.exceptions import WorksheetNotFound
 
 #ТАБЛИЦЫ
+def colnum_to_letter(n):
+    string = ""
+    while n > 0:
+        n, remainder = divmod(n - 1, 26)
+        string = chr(65 + remainder) + string
+    return string
+
 SERVICE_ACCOUNT_INFO = st.secrets["gcp_service_account"]
 
 scope = [
@@ -31,7 +38,10 @@ json_urls = [
 sheet_names = ["history_blau", "history_oben", "lager_blau", "lager_oben"]
 
 for url, sheet_name in zip(json_urls, sheet_names):
-    worksheet = spreadsheet.worksheet(sheet_name) if sheet_name in [ws.title for ws in spreadsheet.worksheets()] else spreadsheet.add_worksheet(sheet_name, 1000, 50)
+    try:
+        worksheet = spreadsheet.worksheet(sheet_name)
+    except WorksheetNotFound:
+        worksheet = spreadsheet.add_worksheet(title=sheet_name, rows=1000, cols=50)
     data = requests.get(url).json()
     if data and isinstance(data, list) and len(data) > 0:
         header = list(data[0].keys())
