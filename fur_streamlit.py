@@ -6,6 +6,9 @@ import streamlit as st
 import tempfile
 from json import JSONDecodeError
 import traceback
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+import requests
 
 st.image("logo.png", width=200)
 
@@ -32,20 +35,60 @@ st.session_state.hotel = st.selectbox(
     index=hotel_liste.index(st.session_state.hotel) if st.session_state.get("hotel") in hotel_liste else 0
 )
 
+#ТАБЛИЦЫ
+SERVICE_ACCOUNT_INFO = st.secrets["gcp_service_account"]
+
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+credentials = ServiceAccountCredentials.from_json_keyfile_dict(SERVICE_ACCOUNT_INFO, scope)
+client = gspread.authorize(credentials)
+spreadsheet = client.open("mogo")
+
+json_urls = [
+    "https://raw.githubusercontent.com/MrakKor/MOGO/main/history_blau_old.json",
+    "https://raw.githubusercontent.com/MrakKor/MOGO/main/history_oben_old.json",
+    "https://raw.githubusercontent.com/MrakKor/MOGO/main/lager_blau_old.json",
+    "https://raw.githubusercontent.com/MrakKor/MOGO/main/lager_oben_old.json"
+]
+sheet_names = ["history_blau", "history_oben", "lager_blau", "lager_oben"]
+
+for url, sheet_name in zip(json_urls, sheet_names):
+    try:
+        worksheet = spreadsheet.worksheet(sheet_name)
+    except gspread.exceptions.WorksheetNotFound:
+        worksheet = spreadsheet.add_worksheet(title=sheet_name, rows="100", cols="20")
+
+    response = requests.get(url)
+    try:
+        data = response.json()
+    except JSONDecodeError:
+        st.error(f"Fehler beim Parsen von JSON von {url}")
+        continue
+
+    if isinstance(data, list) and len(data) > 0:
+        worksheet.clear()
+        worksheet.append_row(list(data[0].keys()))
+        for row in data:
+            worksheet.append_row(list(row.values()))
+
 def lager_datei(hotel):
     return f"lager_{hotel}.json"
 def history_datei(hotel):
     return f"history_{hotel}.json"
 
+MAX_HISTORY = 50
+
 def lade_lager(hotel):
-    pfad = lager_datei(hotel)
-    if os.path.exists(pfad):
-        try:
-            with open(pfad, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except (JSONDecodeError, IOError):
-            return {}  
-    return {}
+    try:
+        worksheet = spreadsheet.worksheet(f"lager_{hotel}")
+        records = worksheet.get_all_records()
+        lager = {row["name"]: row["menge"] for row in records if row["name"] != "__zeit"}
+        zeit_row = next((row for row in records if row["name"] == "__zeit"), None)
+        if zeit_row:
+            lager["__zeit"] = zeit_row["menge"]
+        return lager
+    except Exception as e:
+        st.error(f"Fehler beim Laden aus Google Sheets: {e}")
+        return {}
     
 #Сохранения для моментальной подгрузки склада
 
@@ -63,15 +106,15 @@ def set_lager(hotel, lager, manuelle_datum=False):
 
 #Сохранение лагеря и даты
 
-MAX_HISTORY = 50
-
 def speichere_lager(hotel, lager, manuelle_datum=False):
     try:
         if not manuelle_datum or "__zeit" not in lager:
             lager["__zeit"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        pfad = lager_datei(hotel)
-        atomic_write(pfad, lager)
-    except Exception:
+        worksheet = spreadsheet.worksheet(f"lager_{hotel}")
+        worksheet.clear()
+        rows = [{"name": name, "menge": menge} for name, menge in lager.items()]
+        worksheet.update([["name", "menge"]] + [[r["name"], r["menge"]] for r in rows])
+    except Exception as e:
         st.error("Fehler beim Speichern des Lagers")
         st.text(traceback.format_exc())
 
@@ -85,28 +128,15 @@ def atomic_write(path, data):
     os.replace(tempname, path)  
 
 def speichere_history(hotel, daten):
-    pfad = history_datei(hotel)
-    eintrag = {
-        "zeit": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "hotel": hotel,
-        "daten": daten
-    }
-    history = []
-    if os.path.exists(pfad):
-        try:
-            with open(pfad, "r", encoding="utf-8") as f:
-                history = json.load(f)
-                if not isinstance(history, list):
-                    history = []
-        except (JSONDecodeError, IOError):
-            history = []
-    history.append(eintrag)
-    if len(history) > MAX_HISTORY:
-        history = history[-MAX_HISTORY:]
     try:
-        atomic_write(pfad, history)
-    except Exception:
-        st.error("Fehler beim Schreiben der Historie in die Datei"); st.text(traceback.format_exc())
+        worksheet = spreadsheet.worksheet(f"history_{hotel}")
+        zeit = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        for name, menge in daten.items():
+            worksheet.append_row([zeit, hotel, name, menge])
+    except Exception as e:
+        st.error("Fehler beim Schreiben der Historie in die Datei")
+        st.text(traceback.format_exc())
 
 #Резерв
 
@@ -282,25 +312,20 @@ def zeige_lager(hotel):
 #История заказов
 
 def zeige_history(hotel):
-    pfad = history_datei(hotel)
-    if not os.path.exists(pfad):
-        st.info("Die Geschichte ist leer")
-        return
-    with open(pfad, "r", encoding="utf-8") as f:
-        history = json.load(f)
-    if not history:
-        st.info("Die Geschichte ist leer")
-        return
-    history = list(reversed(history))
-    st.write("⏳ Auftragsverlauf / История заказов:")
-    for eintrag in history:
-        zeit = eintrag.get("zeit", "die Zeit ist unbekannt")
-        hotel_ = eintrag.get("hotel", "das Hotel ist unbekannt")
-        daten = eintrag.get("daten", {})
-        st.write(f"- [{zeit}] Hotel: {hotel_}")
-        for name, menge in daten.items():
+    try:
+        worksheet = spreadsheet.worksheet(f"history_{hotel}")
+        rows = worksheet.get_all_values()[1:] 
+        if not rows:
+            st.info("Die Geschichte ist leer")
+            return
+
+        st.write("⏳ Auftragsverlauf / История заказов:")
+        for row in reversed(rows[-MAX_HISTORY:]):
+            zeit, hotel_, name, menge = row
+            st.write(f"- [{zeit}] Hotel: {hotel_}")
             st.write(f"    {name}: {menge}")
-        st.write("")
+    except Exception as e:
+        st.error(f"Fehler beim Laden der Historie: {e}")
 
 #Вычет со склада
 
