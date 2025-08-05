@@ -47,7 +47,7 @@ for url, sheet_name in zip(json_urls, sheet_names):
         header = [str(k) if k is not None else "" for k in data[0].keys()]
         worksheet.append_row(header)
         rows = [[row.get(col, "") for col in header] for row in data]
-        worksheet.update("A2", rows)
+        worksheet.update(f"A2:{chr(ord('A') + len(header) - 1)}{len(rows) + 1}", rows)
 
 st.image("logo.png", width=200)
 
