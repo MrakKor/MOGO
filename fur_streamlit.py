@@ -33,7 +33,11 @@ sheet_names = ["history_blau", "history_oben", "lager_blau", "lager_oben"]
 for url, sheet_name in zip(json_urls, sheet_names):
     worksheet = spreadsheet.worksheet(sheet_name) if sheet_name in [ws.title for ws in spreadsheet.worksheets()] else spreadsheet.add_worksheet(sheet_name, 1000, 50)
     data = requests.get(url).json()
-    if data: worksheet.update(f"A1:{colnum_to_letter(len(data[0]))}{len(data)+1}", [[*data[0].keys()]] + [[row.get(k, "") for k in data[0]] for row in data], value_input_option='USER_ENTERED')
+    if data and isinstance(data, list) and len(data) > 0:
+        header = list(data[0].keys())
+        rows = [[row.get(k, "") for k in header] for row in data]
+        worksheet.batch_clear(["A1:Z1000"])
+        worksheet.update(f"A1:{colnum_to_letter(len(header))}{len(rows)+1}", [header] + rows, value_input_option='USER_ENTERED')
 
 st.image("logo.png", width=200)
 
