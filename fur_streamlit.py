@@ -30,34 +30,10 @@ json_urls = [
 ]
 sheet_names = ["history_blau", "history_oben", "lager_blau", "lager_oben"]
 
-def colnum_to_letter(n):
-    result = ""
-    while n > 0:
-        n, remainder = divmod(n - 1, 26)
-        result = chr(65 + remainder) + result
-    return result
-
 for url, sheet_name in zip(json_urls, sheet_names):
-    try:
-        worksheet = spreadsheet.worksheet(sheet_name)
-    except gspread.exceptions.WorksheetNotFound:
-        worksheet = spreadsheet.add_worksheet(title=sheet_name, rows="1000", cols="50")
-    response = requests.get(url)
-    try:
-        data = response.json()
-    except JSONDecodeError:
-        st.error(f"Fehler beim Parsen von JSON von {url}")
-        continue
-
-    if isinstance(data, list) and len(data) > 0:
-        worksheet.batch_clear(["A1:Z1000"])
-        header = [str(k) if k is not None else "" for k in data[0].keys()]
-        rows = [[row.get(col, "") for col in header] for row in data]
-        end_col = colnum_to_letter(len(header))  
-        end_row = len(rows) + 1
-        worksheet.update(f"A1:{end_col}{end_row}", [header] + rows, value_input_option='USER_ENTERED')
-
-
+    worksheet = spreadsheet.worksheet(sheet_name) if sheet_name in [ws.title for ws in spreadsheet.worksheets()] else spreadsheet.add_worksheet(sheet_name, 1000, 50)
+    data = requests.get(url).json()
+    if data: worksheet.update(f"A1:{colnum_to_letter(len(data[0]))}{len(data)+1}", [[*data[0].keys()]] + [[row.get(k, "") for k in data[0]] for row in data], value_input_option='USER_ENTERED')
 
 st.image("logo.png", width=200)
 
