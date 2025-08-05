@@ -1,2 +1,2 @@
 gspread
-google-auth
+oauth2client
