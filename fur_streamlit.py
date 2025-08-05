@@ -41,15 +41,12 @@ for url, sheet_name in zip(json_urls, sheet_names):
     except JSONDecodeError:
         st.error(f"Fehler beim Parsen von JSON von {url}")
         continue
-
+        
     if isinstance(data, list) and len(data) > 0:
         worksheet.batch_clear(["A1:Z1000"])
         header = [str(k) if k is not None else "" for k in data[0].keys()]
         worksheet.append_row(header)
-        if daten is not None:
-            rows = [[key, value] for key, value in daten.items()]
-        else:
-            rows = []
+        rows = [[row.get(col, "") for col in header] for row in data]
         worksheet.update("A2", rows)
 
 st.image("logo.png", width=200)
