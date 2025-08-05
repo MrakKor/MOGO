@@ -30,6 +30,13 @@ json_urls = [
 ]
 sheet_names = ["history_blau", "history_oben", "lager_blau", "lager_oben"]
 
+def colnum_to_letter(n):
+    result = ""
+    while n > 0:
+        n, remainder = divmod(n - 1, 26)
+        result = chr(65 + remainder) + result
+    return result
+
 for url, sheet_name in zip(json_urls, sheet_names):
     try:
         worksheet = spreadsheet.worksheet(sheet_name)
@@ -46,9 +53,10 @@ for url, sheet_name in zip(json_urls, sheet_names):
         worksheet.batch_clear(["A1:Z1000"])
         header = [str(k) if k is not None else "" for k in data[0].keys()]
         rows = [[row.get(col, "") for col in header] for row in data]
-        end_col = chr(64 + len(header))  
+        end_col = colnum_to_letter(len(header))  
         end_row = len(rows) + 1
         worksheet.update(f"A1:{end_col}{end_row}", [header] + rows)
+
 
 st.image("logo.png", width=200)
 
