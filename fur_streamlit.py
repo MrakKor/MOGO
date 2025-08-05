@@ -476,5 +476,8 @@ for url, sheet_name in zip(json_urls, sheet_names):
         worksheet.batch_clear(["A1:Z1000"])
         header = [str(k) if k is not None else "" for k in data[0].keys()]
         worksheet.append_row(header)
-        rows = [[key, value] for key, value in daten.items()]
+        if daten is not None:
+            rows = [[key, value] for key, value in daten.items()]
+        else:
+            rows = []
         worksheet.update("A2", rows)
