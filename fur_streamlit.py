@@ -146,8 +146,9 @@ def speichere_history(hotel, daten):
     try:
         worksheet = spreadsheet.worksheet(f"history_{hotel}")
         zeit = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
         for name, menge in daten.items():
+            if not name or menge is None or name.strip() == "":
+                continue
             worksheet.append_row([zeit, hotel, name, menge])
     except Exception as e:
         st.error("Fehler beim Schreiben der Historie in die Datei")
@@ -220,23 +221,28 @@ def main():
             st.session_state.aktuelle_daten = daten
             st.session_state.berechnet = True
 
-        if st.session_state.get("berechnet"):
+        if st.session_state.get("berechnet", False):
             st.write("❓ Speichern Sie das Ergebnis und fügen Sie den Lagerbestand hinzu? / Сохранить результат и прибавить запасы на склад?")
             col1, col2 = st.columns(2)
             with col1:
                 if st.button("✅ Speichern", key="blau_speichern"):
                     lager = get_lager(hotel)
                     daten = st.session_state.get("aktuelle_daten", {})
-                    for name, menge in daten.items():
-                        lager[name] = lager.get(name, 0) + menge
-                    set_lager(hotel, lager)
-                    speichere_history(hotel, daten)
-                    st.success("✅ Gespeichert")
+                    if daten:
+                        for name, menge in daten.items():
+                            lager[name] = lager.get(name, 0) + menge
+                        set_lager(hotel, lager)
+                        speichere_history(hotel, daten)
+                        st.success("✅ Gespeichert")
+                    else:
+                        st.warning("⚠️ Keine Daten zum Speichern vorhanden")
                     st.session_state.berechnet = False  
+                    st.experimental_rerun()
             with col2:
                 if st.button("✖️ Nicht speichern", key="blau_nicht_speichern"):
                     st.info("✖️ Nicht gespeichert")
-                    st.session_state.berechnet = False  
+                    st.session_state.berechnet = False
+                    st.experimental_rerun()
 
   #OBEN
 
@@ -284,23 +290,28 @@ def main():
             st.session_state.aktuelle_daten = daten
             st.session_state.berechnet = True
 
-        if st.session_state.get("berechnet"):
+        if st.session_state.get("berechnet", False):
             st.write("❓ Speichern Sie das Ergebnis und fügen Sie den Lagerbestand hinzu? / Сохранить результат и прибавить запасы на склад?")
             col1, col2 = st.columns(2)
             with col1:
                 if st.button("✅ Speichern", key="oben_speichern"):
                     lager = get_lager(hotel)
                     daten = st.session_state.get("aktuelle_daten", {})
-                    for name, menge in daten.items():
-                        lager[name] = lager.get(name, 0) + menge
-                    set_lager(hotel, lager)
-                    speichere_history(hotel, daten)
-                    st.success("✅ Gespeichert")
+                    if daten:
+                        for name, menge in daten.items():
+                            lager[name] = lager.get(name, 0) + menge
+                        set_lager(hotel, lager)
+                        speichere_history(hotel, daten)
+                        st.success("✅ Gespeichert")
+                    else:
+                        st.warning("⚠️ Keine Daten zum Speichern vorhanden")
                     st.session_state.berechnet = False  
+                    st.experimental_rerun()
             with col2:
                 if st.button("✖️ Nicht speichern", key="oben_nicht_speichern"):
                     st.info("✖️ Nicht gespeichert")
                     st.session_state.berechnet = False
+                    st.experimental_rerun()
 
     else:
         st.error("Hotel nicht gefunden, überprüfen Sie den Namen / Отель не найден, проверьте название")
