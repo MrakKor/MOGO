@@ -113,7 +113,7 @@ def speichere_lager(hotel, lager, manuelle_datum=False):
         worksheet = spreadsheet.worksheet(f"lager_{hotel}")
         worksheet.clear()
         rows = [{"name": name, "menge": menge} for name, menge in lager.items()]
-        worksheet.update([["name", "menge"]] + [[r["name"], r["menge"]] for r in rows])
+        worksheet.update("A1", [["name", "menge"]] + [[r["name"], r["menge"]] for r in rows])
     except Exception as e:
         st.error("Fehler beim Speichern des Lagers")
         st.text(traceback.format_exc())
@@ -349,15 +349,15 @@ def verbrauch_berechnen(hotel, zimmer_klein, zimmer_gross):
              }
     elif hotel == "oben":
         daten = {
-            "Bezüge 240x210": reserve_10(zimmer_gross),
-            "Bezüge 140x230": reserve_10(zimmer_klein),
-            "Bettlaken 280x300": reserve_10(zimmer_gross),
-            "Bettlaken 220x300": reserve_10(zimmer_klein),
-            "Kissen 80x80": reserve_10((2 * zimmer_klein) + (4 * zimmer_gross)),
-            "Duschtuch 70x140": reserve_20((2 * zimmer_gross) + zimmer_klein),
-            "Handtuch 50x100": reserve_20((2 * zimmer_gross) + zimmer_klein),
-            "Vorleger 50x90": reserve_20(zimmer_klein + zimmer_gross),
-            "Geschirrtücher 60x80": zimmer_klein + zimmer_gross
+            "Bezug_240x210": reserve_10(zimmer_gross),
+            "Bezug_140x230": reserve_10(zimmer_klein),
+            "Bettlaken_280x300": reserve_10(zimmer_gross),
+            "Bettlaken_220x300": reserve_10(zimmer_klein),
+            "Kissen_80x80": reserve_10((2 * zimmer_klein) + (4 * zimmer_gross)),
+            "Duschtuch_70x140": reserve_20((2 * zimmer_gross) + zimmer_klein),
+            "Handtuch_50x100": reserve_20((2 * zimmer_gross) + zimmer_klein),
+            "Vorleger_50x90": reserve_20(zimmer_klein + zimmer_gross),
+            "Geschirrtuch_60x80": zimmer_klein + zimmer_gross
         }
     else:
         st.error("Hotel nicht gefunden / Отель не найден")
