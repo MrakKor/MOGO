@@ -38,7 +38,7 @@ st.session_state.hotel = st.selectbox(
 #ТАБЛИЦЫ
 SERVICE_ACCOUNT_INFO = st.secrets["gcp_service_account"]
 
-scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+scope = ["https://www.googleapis.com/auth/spreadsheets"]
 credentials = ServiceAccountCredentials.from_json_keyfile_dict(SERVICE_ACCOUNT_INFO, scope)
 client = gspread.authorize(credentials)
 spreadsheet = client.open("mogo")
@@ -55,7 +55,7 @@ for url, sheet_name in zip(json_urls, sheet_names):
     try:
         worksheet = spreadsheet.worksheet(sheet_name)
     except gspread.exceptions.WorksheetNotFound:
-        worksheet = spreadsheet.add_worksheet(title=sheet_name, rows="100", cols="20")
+        worksheet = spreadsheet.add_worksheet(title=sheet_name, rows="1000", cols="50")
 
     response = requests.get(url)
     try:
@@ -65,13 +65,11 @@ for url, sheet_name in zip(json_urls, sheet_names):
         continue
 
     if isinstance(data, list) and len(data) > 0:
-        worksheet.clear()
+        worksheet.batch_clear([f"A1:Z{max_row}"])
         header = [str(k) if k is not None else "" for k in data[0].keys()]
         worksheet.append_row(header)
-        for row in data:
-            cleaned_row = [str(v) if v is not None else "" for v in row.values()]
-            worksheet.append_row(cleaned_row)
-
+        rows = [list(row.values()) for row in data]
+        worksheet.update("A2", rows)  
 
 def lager_datei(hotel):
     return f"lager_{hotel}.json"
@@ -84,7 +82,7 @@ def lade_lager(hotel):
     try:
         worksheet = spreadsheet.worksheet(f"lager_{hotel}")
         records = worksheet.get_all_records()
-        lager = {row["name"]: row["menge"] for row in records if row["name"] != "__zeit"}
+        lager = {row["name"].strip(): row["menge"] for row in records if row["name"].strip() != "__zeit"}
         zeit_row = next((row for row in records if row["name"] == "__zeit"), None)
         if zeit_row:
             lager["__zeit"] = zeit_row["menge"]
@@ -114,7 +112,7 @@ def speichere_lager(hotel, lager, manuelle_datum=False):
         if not manuelle_datum or "__zeit" not in lager:
             lager["__zeit"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         worksheet = spreadsheet.worksheet(f"lager_{hotel}")
-        worksheet.clear()
+        worksheet.batch_clear(["A1:Z1000"])
         rows = [{"name": name, "menge": menge} for name, menge in lager.items()]
         worksheet.update("A1", [["name", "menge"]] + [[r["name"], r["menge"]] for r in rows])
     except Exception as e:
@@ -339,16 +337,16 @@ def verbrauch_berechnen(hotel, zimmer_klein, zimmer_gross):
     fehlende = []
     if hotel == "blau":
         daten = {
-            "Bezüge 240x210": reserve_10(zimmer_klein + zimmer_gross),
-            "Bezüge 140x230": reserve_10(math.ceil((zimmer_klein + zimmer_gross) * 0.1)),
-            "Bettlaken 280x300": reserve_10(zimmer_gross),
-            "Bettlaken 220x300": reserve_10(zimmer_klein),
-            "Kissen 80x80": reserve_10(4 * (zimmer_klein + zimmer_gross)),
-            "Duschtuch 70x140": reserve_20(2 * (zimmer_klein + zimmer_gross)),
-            "Handtuch 50x100": reserve_20(2 * (zimmer_klein + zimmer_gross)),
-            "Vorleger 50x90": reserve_20(zimmer_klein + zimmer_gross),
-            "Geschirrtücher 60x80": zimmer_klein + zimmer_gross,
-            "Transportsack 70x110": 1 if zimmer_klein + zimmer_gross < 2 else (zimmer_klein + zimmer_gross + 1) // 2
+            "Bezug_240x210": reserve_10(zimmer_klein + zimmer_gross),
+            "Bezug_140x230": reserve_10(math.ceil((zimmer_klein + zimmer_gross) * 0.1)),
+            "Bettlaken_280x300": reserve_10(zimmer_gross),
+            "Bettlaken_220x300": reserve_10(zimmer_klein),
+            "Kissen_80x80": reserve_10(4 * (zimmer_klein + zimmer_gross)),
+            "Duschtuch_70x140": reserve_20(2 * (zimmer_klein + zimmer_gross)),
+            "Handtuch_50x100": reserve_20(2 * (zimmer_klein + zimmer_gross)),
+            "Vorleger_50x90": reserve_20(zimmer_klein + zimmer_gross),
+            "Geschirrtuch_60x80": zimmer_klein + zimmer_gross,
+            "Transportsack_70x110": 1 if zimmer_klein + zimmer_gross < 2 else (zimmer_klein + zimmer_gross + 1) // 2
              }
     elif hotel == "oben":
         daten = {
