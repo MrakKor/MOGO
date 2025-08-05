@@ -45,16 +45,19 @@ for url, sheet_name in zip(json_urls, sheet_names):
     data = requests.get(url).json()
     if data and isinstance(data, list) and len(data) > 0:
         header = list(data[0].keys())
-        rows = [[row.get(k, "") for k in header] for row in data]
+        def normalize_cell_value(val):
+            if isinstance(val, dict):
+                return json.dumps(val, ensure_ascii=False)  # превращает словарь в строку
+            return val
+        rows = [
+            [normalize_cell_value(row.get(k, "")) for k in header]
+            for row in data
+        ]
+
         end_col_letter = colnum_to_letter(len(header))
         end_row = len(rows) + 1
-        # очищаем нужный диапазон
-        worksheet.batch_clear([f"A1:{end_col_letter}{1000}"])
-        try:
-            worksheet.update(f"A1:{end_col_letter}{end_row}", [header] + rows)
-        except Exception as e:
-            st.error("Ошибка при обновлении таблицы")
-            st.code(traceback.format_exc())
+        worksheet.batch_clear([f"A1:{end_col_letter}1000"])
+        worksheet.update(f"A1:{end_col_letter}{end_row}", [header] + rows)
 
         
 st.image("logo.png", width=200)
