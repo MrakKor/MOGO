@@ -191,16 +191,16 @@ def main():
             st.write("- Container Bestellung leer: 0")
             
             daten = {
-                "Bezüge 240x210": reserve_10(bezug_gross),
-                "Bezüge 140x230": reserve_10(bezug_klein),
-                "Bettlaken 280x300": reserve_10(bettlaken_gross),
-                "Bettlaken 220x300": reserve_10(bettlaken_klein),
-                "Kissen 80x80": reserve_10(kissen),
-                "Duschtuch 70x140": reserve_20(duschtuch),
-                "Handtuch 50x100": reserve_20(handtuch),
-                "Vorleger 50x90": reserve_20(fussmatte),
-                "Geschirrtücher 60x80": geschirrtuch,
-                "Transportsack 70x110": sack
+                "Bezug_240x210": reserve_10(bezug_gross),
+                "Bezug_140x230": reserve_10(bezug_klein),
+                "Bettlaken_280x300": reserve_10(bettlaken_gross),
+                "Bettlaken_220x300": reserve_10(bettlaken_klein),
+                "Kissen_80x80": reserve_10(kissen),
+                "Duschtuch_70x140": reserve_20(duschtuch),
+                "Handtuch_50x100": reserve_20(handtuch),
+                "Vorleger_50x90": reserve_20(fussmatte),
+                "Geschirrtuch_60x80": geschirrtuch,
+                "Transportsack_70x110": sack
             }
             st.session_state.aktuelle_daten = daten
             st.session_state.berechnet = True
@@ -256,15 +256,15 @@ def main():
             st.write("- Container Bestellung leer: Den Lagerbestand überprüfen / Свериться со складом")
             
             daten = {
-                "Bezüge 240x210": reserve_10(bezug_gross),
-                "Bezüge 140x230": reserve_10(bezug_klein),
-                "Bettlaken 280x300": reserve_10(bettlaken_gross),
-                "Bettlaken 220x300": reserve_10(bettlaken_klein),
-                "Kissen 80x80": reserve_10(kissen),
-                "Duschtuch 70x140": reserve_20(duschtuch),
-                "Handtuch 50x100": reserve_20(handtuch),
-                "Vorleger 50x90": reserve_20(fussmatte),
-                "Geschirrtücher 60x80": geschirrtuch,
+                "Bezug_240x210": reserve_10(bezug_gross),
+                "Bezug_140x230": reserve_10(bezug_klein),
+                "Bettlaken_280x300": reserve_10(bettlaken_gross),
+                "Bettlaken_220x300": reserve_10(bettlaken_klein),
+                "Kissen_80x80": reserve_10(kissen),
+                "Duschtuch_70x140": reserve_20(duschtuch),
+                "Handtuch_50x100": reserve_20(handtuch),
+                "Vorleger_50x90": reserve_20(fussmatte),
+                "Geschirrtuch_60x80": geschirrtuch,
             }
             st.session_state.aktuelle_daten = daten
             st.session_state.berechnet = True
