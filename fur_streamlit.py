@@ -55,7 +55,8 @@ for url, sheet_name in zip(json_urls, sheet_names):
         rows = [[row.get(col, "") for col in header] for row in data]
         end_col = colnum_to_letter(len(header))  
         end_row = len(rows) + 1
-        worksheet.update(f"A1:{end_col}{end_row}", [header] + rows)
+        worksheet.update(f"A1:{end_col}{end_row}", [header] + rows, value_input_option='USER_ENTERED')
+
 
 
 st.image("logo.png", width=200)
