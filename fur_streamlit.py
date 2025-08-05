@@ -29,6 +29,13 @@ json_urls = [
 ]
 sheet_names = ["history_blau", "history_oben", "lager_blau", "lager_oben"]
 
+def colnum_string(n):
+    string = ""
+    while n > 0:
+        n, remainder = divmod(n - 1, 26)
+        string = chr(65 + remainder) + string
+    return string
+
 for url, sheet_name in zip(json_urls, sheet_names):
     try:
         worksheet = spreadsheet.worksheet(sheet_name)
@@ -41,13 +48,15 @@ for url, sheet_name in zip(json_urls, sheet_names):
     except JSONDecodeError:
         st.error(f"Fehler beim Parsen von JSON von {url}")
         continue
-        
+
     if isinstance(data, list) and len(data) > 0:
         worksheet.batch_clear(["A1:Z1000"])
         header = [str(k) if k is not None else "" for k in data[0].keys()]
         worksheet.append_row(header)
         rows = [[row.get(col, "") for col in header] for row in data]
-        worksheet.update(f"A2:{chr(ord('A') + len(header) - 1)}{len(rows) + 1}", rows)
+        end_col = colnum_string(len(header))
+        end_row = len(rows) + 1  
+        worksheet.update(f"A2:{end_col}{end_row}", rows)
 
 st.image("logo.png", width=200)
 
