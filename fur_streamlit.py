@@ -50,7 +50,7 @@ for url, sheet_name in zip(json_urls, sheet_names):
         end_row = len(rows) + 1
         # очищаем нужный диапазон
         worksheet.batch_clear([f"A1:{end_col_letter}{1000}"])
-        worksheet.update(f"A1:{end_col_letter}{end_row}", [header] + rows, value_input_option='USER_ENTERED')
+        worksheet.update_values(f"A1:{end_col_letter}{end_row}", [header] + rows)
         
 st.image("logo.png", width=200)
 
