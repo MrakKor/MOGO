@@ -50,7 +50,12 @@ for url, sheet_name in zip(json_urls, sheet_names):
         end_row = len(rows) + 1
         # очищаем нужный диапазон
         worksheet.batch_clear([f"A1:{end_col_letter}{1000}"])
-        worksheet.update(f"A1:{end_col_letter}{end_row}", [header] + rows)
+        try:
+            worksheet.update(f"A1:{end_col_letter}{end_row}", [header] + rows)
+        except Exception as e:
+            st.error("Ошибка при обновлении таблицы")
+            st.code(traceback.format_exc())
+
         
 st.image("logo.png", width=200)
 
