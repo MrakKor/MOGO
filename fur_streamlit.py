@@ -68,7 +68,9 @@ for url, sheet_name in zip(json_urls, sheet_names):
         worksheet.clear()
         worksheet.append_row(list(data[0].keys()))
         for row in data:
-            worksheet.append_row(list(row.values()))
+            cleaned_row = [str(v) if v is not None else "" for v in row.values()]
+            worksheet.append_row(cleaned_row)
+
 
 def lager_datei(hotel):
     return f"lager_{hotel}.json"
