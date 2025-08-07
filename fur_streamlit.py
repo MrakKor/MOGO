@@ -168,9 +168,6 @@ def main():
         st.session_state.pop(f"lager_{st.session_state.last_hotel}", None)
     st.session_state.last_hotel = hotel
 
-    if "aktion_abgeschlossen" not in st.session_state:
-        st.session_state.aktion_abgeschlossen = False
-
     if not hotel:
         return
 
@@ -223,9 +220,8 @@ def main():
             }
             st.session_state.aktuelle_daten = daten
             st.session_state.berechnet = True
-            st.session_state.aktion_abgeschlossen = False 
 
-        if st.session_state.get("berechnet", False) and not st.session_state.get("aktion_abgeschlossen", False):
+        if st.session_state.get("berechnet", False):
             st.write("❓ Speichern Sie das Ergebnis und fügen Sie den Lagerbestand hinzu? / Сохранить результат и прибавить запасы на склад?")
             col1, col2 = st.columns(2)
             with col1:
@@ -241,16 +237,12 @@ def main():
                     else:
                         st.warning("⚠️ Keine Daten zum Speichern vorhanden")
                     st.session_state.berechnet = False  
-                    st.session_state.aktion_abgeschlossen = True
                     st.session_state.pop("aktuelle_daten", None) 
-                    st.experimental_rerun()
             with col2:
                 if st.button("✖️ Nicht speichern", key="blau_nicht_speichern"):
                     st.info("✖️ Nicht gespeichert")
                     st.session_state.berechnet = False
-                    st.session_state.aktion_abgeschlossen = True
                     st.session_state.pop("aktuelle_daten", None)
-                    st.experimental_rerun()
 
   #OBEN
 
@@ -297,9 +289,8 @@ def main():
             }
             st.session_state.aktuelle_daten = daten
             st.session_state.berechnet = True
-            st.session_state.aktion_abgeschlossen = False 
 
-        if st.session_state.get("berechnet", False) and not st.session_state.get("aktion_abgeschlossen", False):
+        if st.session_state.get("berechnet", False):
             st.write("❓ Speichern Sie das Ergebnis und fügen Sie den Lagerbestand hinzu? / Сохранить результат и прибавить запасы на склад?")
             col1, col2 = st.columns(2)
             with col1:
@@ -315,16 +306,12 @@ def main():
                     else:
                         st.warning("⚠️ Keine Daten zum Speichern vorhanden")
                     st.session_state.berechnet = False  
-                    st.session_state.aktion_abgeschlossen = True
                     st.session_state.pop("aktuelle_daten", None)
-                    st.experimental_rerun()
             with col2:
                 if st.button("✖️ Nicht speichern", key="oben_nicht_speichern"):
                     st.info("✖️ Nicht gespeichert")
                     st.session_state.berechnet = False
-                    st.session_state.aktion_abgeschlossen = True
                     st.session_state.pop("aktuelle_daten", None)
-                    st.experimental_rerun()
 
     else:
         st.error("Hotel nicht gefunden, überprüfen Sie den Namen / Отель не найден, проверьте название")
