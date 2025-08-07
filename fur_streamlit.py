@@ -237,12 +237,14 @@ def main():
                     else:
                         st.warning("⚠️ Keine Daten zum Speichern vorhanden")
                     st.session_state.berechnet = False  
-                    st.session_state.pop("aktuelle_daten", None)     
+                    st.session_state.pop("aktuelle_daten", None) 
+                    st.rerun()
             with col2:
                 if st.button("✖️ Nicht speichern", key="blau_nicht_speichern"):
                     st.info("✖️ Nicht gespeichert")
                     st.session_state.berechnet = False
                     st.session_state.pop("aktuelle_daten", None)
+                    st.rerun()
 
   #OBEN
 
@@ -307,11 +309,13 @@ def main():
                         st.warning("⚠️ Keine Daten zum Speichern vorhanden")
                     st.session_state.berechnet = False  
                     st.session_state.pop("aktuelle_daten", None)
+                    st.rerun()
             with col2:
                 if st.button("✖️ Nicht speichern", key="oben_nicht_speichern"):
                     st.info("✖️ Nicht gespeichert")
                     st.session_state.berechnet = False
                     st.session_state.pop("aktuelle_daten", None)
+                    st.rerun()
 
     else:
         st.error("Hotel nicht gefunden, überprüfen Sie den Namen / Отель не найден, проверьте название")
