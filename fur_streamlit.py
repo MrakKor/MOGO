@@ -169,7 +169,7 @@ def main():
     st.session_state.last_hotel = hotel
 
     if "aktion_abgeschlossen" not in st.session_state:
-    st.session_state.aktion_abgeschlossen = False
+        st.session_state.aktion_abgeschlossen = False
 
     if not hotel:
         return
