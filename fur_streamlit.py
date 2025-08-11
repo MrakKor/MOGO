@@ -29,6 +29,8 @@ credentials = ServiceAccountCredentials.from_json_keyfile_dict(SERVICE_ACCOUNT_I
 client = gspread.authorize(credentials)
 spreadsheet = client.open("mogo")
 
+# ИНИЦИАЛИЗАЦИЯ!!!!!
+"""
 json_urls = [
     "https://raw.githubusercontent.com/MrakKor/MOGO/main/history_blau_old.json",
     "https://raw.githubusercontent.com/MrakKor/MOGO/main/history_oben_old.json",
@@ -37,8 +39,7 @@ json_urls = [
 ]
 sheet_names = ["history_blau", "history_oben", "lager_blau", "lager_oben"]
 
-#Инициализация гитхаб!!!
-"""
+
 for url, sheet_name in zip(json_urls, sheet_names):
     try:
         worksheet = spreadsheet.worksheet(sheet_name)
@@ -60,8 +61,7 @@ for url, sheet_name in zip(json_urls, sheet_names):
         end_row = len(rows) + 1
         worksheet.batch_clear([f"A1:{end_col_letter}1000"])
         worksheet.update([header] + rows, f"A1:{end_col_letter}{end_row}")
-    """
-
+"""
         
 st.image("logo.png", width=200)
 
