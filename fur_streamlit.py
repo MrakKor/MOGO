@@ -37,6 +37,8 @@ json_urls = [
 ]
 sheet_names = ["history_blau", "history_oben", "lager_blau", "lager_oben"]
 
+#Инициализация гитхаб!!!
+"""
 for url, sheet_name in zip(json_urls, sheet_names):
     try:
         worksheet = spreadsheet.worksheet(sheet_name)
@@ -58,6 +60,7 @@ for url, sheet_name in zip(json_urls, sheet_names):
         end_row = len(rows) + 1
         worksheet.batch_clear([f"A1:{end_col_letter}1000"])
         worksheet.update([header] + rows, f"A1:{end_col_letter}{end_row}")
+    """
 
         
 st.image("logo.png", width=200)
@@ -146,11 +149,8 @@ def speichere_history(hotel, daten):
     try:
         worksheet = spreadsheet.worksheet(f"history_{hotel}")
         zeit = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        for name, menge in daten.items():
-            if not name or menge is None or name.strip() == "":
-                continue
-            daten_json = json.dumps(daten, ensure_ascii=False)
-            worksheet.append_row([zeit, hotel, daten_json])  
+        daten_json = json.dumps(daten, ensure_ascii=False)
+        worksheet.append_row([zeit, hotel, daten_json])  
     except Exception as e:
         st.error("Fehler beim Schreiben der Historie in die Datei")
         st.text(traceback.format_exc())
