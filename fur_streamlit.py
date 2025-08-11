@@ -401,7 +401,7 @@ def verbrauch_berechnen(hotel, zimmer_klein, zimmer_gross):
         verfügbar = lager.get(name, 0)
         if verfügbar >= menge:
             lager[name] -= menge
-            tatsächlich_verbraucht[name] = -menge
+            tatsächlich_verbraucht[name] = menge
         elif verfügbar > 0:
             lager[name] = 0
             tatsächlich_verbraucht[name] = -verfügbar
