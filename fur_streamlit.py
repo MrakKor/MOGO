@@ -234,7 +234,7 @@ def main():
                         st.success("✅ Gespeichert")  
                         st.session_state.pop("aktuelle_daten", None) 
                         st.session_state.berechnet = False
-                        st.experimental_rerun()
+                        st.rerun()
                     else:
                         st.warning("⚠️ Keine Daten zum Speichern vorhanden")
             with col2:
@@ -242,7 +242,7 @@ def main():
                     st.info("✖️ Nicht gespeichert")
                     st.session_state.pop("aktuelle_daten", None)
                     st.session_state.berechnet = False
-                    st.experimental_rerun()
+                    st.rerun()
 
   #OBEN
 
@@ -305,7 +305,7 @@ def main():
                         st.success("✅ Gespeichert")
                         st.session_state.pop("aktuelle_daten", None)
                         st.session_state.berechnet = False  
-                        st.experimental_rerun()
+                        st.rerun()
                     else:
                         st.warning("⚠️ Keine Daten zum Speichern vorhanden")
             with col2:
@@ -313,7 +313,7 @@ def main():
                     st.info("✖️ Nicht gespeichert")
                     st.session_state.pop("aktuelle_daten", None)
                     st.session_state.berechnet = False
-                    st.experimental_rerun()
+                    st.rerun()
 
     else:
         st.error("Hotel nicht gefunden, überprüfen Sie den Namen / Отель не найден, проверьте название")
