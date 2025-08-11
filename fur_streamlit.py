@@ -163,7 +163,7 @@ def reserve_10(wert, prozent=10):
 def main():
     hotel = st.session_state.hotel
     if "last_hotel" in st.session_state and st.session_state.last_hotel != hotel:
-    st.session_state.last_hotel = hotel
+        st.session_state.last_hotel = hotel
 
     if not hotel:
         return
