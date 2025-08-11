@@ -146,7 +146,10 @@ def speichere_history(hotel, daten):
     try:
         worksheet = spreadsheet.worksheet(f"history_{hotel}")
         zeit = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        worksheet.append_row([zeit, hotel, json.dumps(daten, ensure_ascii=False)])
+        for name, menge in daten.items():
+            if not name or menge is None or name.strip() == "":
+                continue
+            worksheet.append_row([zeit, hotel, name, menge])  
     except Exception as e:
         st.error("Fehler beim Schreiben der Historie in die Datei")
         st.text(traceback.format_exc())
