@@ -90,7 +90,7 @@ def lager_datei(hotel):
 def history_datei(hotel):
     return f"history_{hotel}.json"
 
-MAX_HISTORY = 50
+MAX_HISTORY = 100
 
 def lade_lager(hotel):
     try:
@@ -149,7 +149,7 @@ def speichere_history(hotel, daten):
         for name, menge in daten.items():
             if not name or menge is None or name.strip() == "":
                 continue
-            worksheet.append_row([zeit, hotel, name, menge])  
+            worksheet.append_row([zeit, hotel, '{"test": 1}'])  
     except Exception as e:
         st.error("Fehler beim Schreiben der Historie in die Datei")
         st.text(traceback.format_exc())
