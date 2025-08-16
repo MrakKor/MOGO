@@ -348,7 +348,7 @@ def zeige_lager(hotel):
     st.write("📦 Rückstände im Lager:")
     soll = HOTEL_SOLL.get(hotel, {})
     for name, menge in lager.items():
-        if name != "__zeit":
+        if name == "__zeit":
             continue
         text = f"- {name}: {menge}"
         if name in soll:
