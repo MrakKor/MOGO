@@ -303,6 +303,34 @@ def main():
     else:
         st.error("Hotel nicht gefunden, überprüfen Sie den Namen / Отель не найден, проверьте название")
 
+#Норматив
+        
+HOTEL_SOLL = {
+    "blau": {
+        "Bezug_240x210": 66,
+        "Bezug_140x230": 7,
+        "Bettlaken_280x300": 22,
+        "Bettlaken_220x300": 44,
+        "Kissen_80x80": 264,
+        "Duschtuch_70x140": 144,
+        "Handtuch_50x100": 144,
+        "Vorleger_50x90": 72,
+        "Geschirrtuch_60x80": 60,
+        "Transportsack_70x110": 30,
+    },
+    "oben": {
+        "Bezug_240x210": 33,
+        "Bezug_140x230": 33,
+        "Bettlaken_280x300": 33,
+        "Bettlaken_220x300": 33,
+        "Kissen_80x80": 199,
+        "Duschtuch_70x140": 108,
+        "Handtuch_50x100": 108,
+        "Vorleger_50x90": 72,
+        "Geschirrtuch_60x80": 60,
+    }
+}
+
 #Склад
 
 def zeige_lager(hotel):
@@ -318,9 +346,18 @@ def zeige_lager(hotel):
         st.write("📅 Das Datum der letzten Änderung ist unbekannt")
 
     st.write("📦 Rückstände im Lager:")
+    soll = HOTEL_SOLL.get(hotel, {})
     for name, menge in lager.items():
         if name != "__zeit":
-            st.write(f"- {name}: {menge}")
+            continue
+        text = f"- {name}: {menge}"
+        if name in soll:
+            diff = soll[name] - menge
+            if diff > 0:
+                text += f" ⚠️ fehlt: {diff}"
+            else:
+                text += " ✅ ausreichend"
+        st.write(text)
 
 #История заказов
 
